@@ -5,6 +5,17 @@ import Texto from "./components/Texto.vue";
 const mensagem = ref("");
 const contador = ref(0);
 const showComponent = ref(true);
+const items = ref([]);
+
+const fetchData = async () => {
+    try {
+        const response = await fetch("../public/data/nomes.json");
+        const data = await response.json();
+        items.value = data;
+    } catch (error) {
+        console.error("O erro é: ", error);
+    }
+};
 
 function toggleComponent() {
     showComponent.value = !showComponent.value;
@@ -18,6 +29,7 @@ function incrementar() {
 onMounted(() => {
     mensagem.value = "Componente Montado";
     console.log("onMounted executado");
+    fetchData();
 });
 
 // Antes de ser montado
@@ -43,4 +55,9 @@ onBeforeUpdate(() => {
     <br />
     <button @click="toggleComponent">Mostrar/Esconder</button>
     <Texto v-if="showComponent" />
+
+    <div v-if="items.length === 0">Carregando...</div>
+    <ul v-else>
+        <li v-for="item in items" :key="item.id">{{ item.name }}</li>
+    </ul>
 </template>
